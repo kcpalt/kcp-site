@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KCP · Kaizen Corporation — Croissance locale, une amélioration à la fois</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14161C;
+  --bg-2:#181B23;
+  --bg-3:#20242F;
+  --bg-4:#272C39;
+  --cream:#FAF9F6;
+  --cream-2:#C7C9D1;
+  --cream-3:#8A8D99;
+  --blue:#4C5F99;
+  --blue-2:#7A8CD1;
+  --blue-glow:#96A6E8;
+  --line:#2A2F3B;
+  --line-2:#353B49;
+  --spectrum:linear-gradient(90deg,#E56A8C,#E5A15C,#E3D06A,#77CF9A,#5CB0E5,#8C86E5);
+  --gutter:clamp(20px,5vw,80px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Zen Kaku Gothic New",system-ui,sans-serif;
+  background:var(--bg);color:var(--cream);line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body.locked{overflow:hidden;height:100vh}
+::selection{background:var(--blue);color:var(--cream)}
+h1,h2,h3{line-height:1.08;letter-spacing:-.01em}
+.serif{font-family:"Cormorant Garamond",serif}
+a{color:inherit;text-decoration:none}
+
+/* ambient grid glow */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(1200px 700px at 78% -8%, rgba(76,95,153,.20), transparent 60%),
+    radial-gradient(900px 600px at 8% 108%, rgba(76,95,153,.12), transparent 60%);
+}
+
+.eyebrow{display:inline-flex;gap:12px;align-items:center;
+  font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--blue-2);font-weight:700}
+.eyebrow .k{font-family:"Shippori Mincho",serif;letter-spacing:0;font-size:1.05rem;color:var(--cream)}
+
+/* mini ascending-bars motif */
+.bars{display:inline-flex;align-items:flex-end;gap:2.5px;height:16px}
+.bars i{width:4px;background:var(--cream);border-radius:1px;display:block}
+.bars i:nth-child(1){height:33%}
+.bars i:nth-child(2){height:58%}
+.bars i:nth-child(3){height:78%}
+.bars i:nth-child(4){height:100%;background:var(--blue-2)}
+
+/* ---------- OPENING ANIMATION ---------- */
+#intro{position:fixed;inset:0;z-index:1000;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 1.05s cubic-bezier(.76,0,.24,1);}
+#intro::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(700px 500px at 50% 42%, rgba(76,95,153,.22), transparent 65%);}
+#intro.lift{transform:translateY(-102%)}
+.intro-stage{position:relative;text-align:center;width:min(420px,84vw)}
+.intro-svg{width:210px;height:130px;display:block;margin:0 auto;overflow:visible}
+.ibar{transform-origin:bottom;transform:scaleY(0)}
+.ibar-1{animation:grow .45s cubic-bezier(.2,.9,.3,1) .2s forwards}
+.ibar-2{animation:grow .45s cubic-bezier(.2,.9,.3,1) .37s forwards}
+.ibar-3{animation:grow .45s cubic-bezier(.2,.9,.3,1) .54s forwards}
+.ibar-4{animation:grow .45s cubic-bezier(.2,.9,.3,1) .71s forwards}
+.ibar-5{animation:grow .5s cubic-bezier(.2,1.3,.4,1) .88s forwards}
+.iline{fill:none;stroke:var(--blue-glow);stroke-width:2.5;stroke-linecap:round;
+  stroke-dasharray:260;stroke-dashoffset:260;
+  animation:draw 1s cubic-bezier(.5,.1,.4,1) 1.15s forwards;filter:drop-shadow(0 0 5px rgba(150,166,232,.6))}
+.intro-word{position:relative;margin-top:26px;font-family:"Cormorant Garamond",serif;
+  font-weight:700;font-size:4.4rem;letter-spacing:.06em;color:var(--cream);
+  opacity:0;animation:wordIn .9s cubic-bezier(.2,.7,.3,1) 1.55s forwards;overflow:hidden}
+.intro-word::after{content:"";position:absolute;top:0;left:-60%;width:55%;height:100%;
+  background:var(--spectrum);mix-blend-mode:screen;filter:blur(9px);opacity:.9;
+  transform:skewX(-18deg);animation:sweep 1.1s ease 2s forwards}
+.intro-tag{margin-top:14px;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--cream-3);opacity:0;animation:fadeUp .8s ease 2.5s forwards}
+.intro-tag .k{font-family:"Shippori Mincho",serif;letter-spacing:.1em;color:var(--cream-2)}
+.skip{position:fixed;bottom:26px;right:26px;z-index:1001;background:none;
+  border:1px solid rgba(250,249,246,.22);color:var(--cream-3);font-family:inherit;
+  font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;padding:9px 18px;
+  border-radius:40px;cursor:pointer;transition:.25s}
+.skip:hover{border-color:var(--blue-2);color:var(--cream)}
+@keyframes grow{to{transform:scaleY(1)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes wordIn{from{opacity:0;transform:translateY(16px);filter:blur(7px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes sweep{from{left:-60%}to{left:130%}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- NAV ---------- */
+header.nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px var(--gutter);
+  background:rgba(20,22,28,.72);backdrop-filter:blur(12px);
+  border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s;
+  opacity:0;transform:translateY(-14px)}
+header.nav.show{opacity:1;transform:none;transition:opacity .7s,transform .7s}
+header.nav.scrolled{border-color:var(--line);box-shadow:0 10px 40px -26px #000}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{height:46px;width:auto;display:block}
+nav.links{display:flex;gap:32px;align-items:center}
+nav.links a{font-size:.86rem;font-weight:500;color:var(--cream-2);position:relative;transition:color .2s}
+nav.links a::after{content:"";position:absolute;left:0;bottom:-5px;height:1.5px;width:0;background:var(--blue-2);transition:width .25s}
+nav.links a:hover{color:var(--cream)}
+nav.links a:hover::after{width:100%}
+.nav-cta{background:var(--blue);color:var(--cream)!important;padding:10px 20px;border-radius:40px;font-weight:700;font-size:.82rem;transition:.2s}
+.nav-cta:hover{background:var(--blue-2);box-shadow:0 8px 24px -8px rgba(122,140,209,.7)}
+.burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px}
+.burger span{width:24px;height:2px;background:var(--cream);display:block;transition:.3s}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;z-index:2;padding:150px var(--gutter) 90px;min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.hero-bars-bg{position:absolute;right:var(--gutter);bottom:0;display:flex;align-items:flex-end;gap:min(2.4vw,26px);height:70vh;z-index:0;opacity:.5;pointer-events:none}
+.hero-bars-bg span{width:min(6vw,66px);border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--bg-4),var(--bg-2))}
+.hero-bars-bg span:nth-child(1){height:22%}
+.hero-bars-bg span:nth-child(2){height:38%}
+.hero-bars-bg span:nth-child(3){height:57%}
+.hero-bars-bg span:nth-child(4){height:79%}
+.hero-bars-bg span:nth-child(5){height:100%;background:linear-gradient(180deg,var(--blue),rgba(76,95,153,.15))}
+.hero-inner{position:relative;z-index:2;max-width:940px}
+.hero h1{font-family:"Cormorant Garamond",serif;font-weight:600;
+  font-size:clamp(2.6rem,7vw,5.7rem);margin:22px 0 0;letter-spacing:-.01em;line-height:1.02}
+.hero h1 em{font-style:italic;color:var(--cream)}
+.hero h1 .accent{position:relative;font-style:italic}
+.hero h1 .accent::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:3px;background:var(--spectrum);border-radius:3px;opacity:.9}
+.hero p.lead{font-size:clamp(1.05rem,1.9vw,1.3rem);color:var(--cream-2);max-width:620px;margin:28px 0 40px;line-height:1.6}
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:inherit;font-weight:700;
+  font-size:.95rem;padding:15px 30px;border-radius:44px;cursor:pointer;border:none;transition:.22s}
+.btn-primary{background:var(--blue);color:var(--cream)}
+.btn-primary:hover{background:var(--blue-2);transform:translateY(-2px);box-shadow:0 14px 34px -14px rgba(122,140,209,.7)}
+.btn-ghost{background:none;color:var(--cream);border:1.5px solid var(--line-2)}
+.btn-ghost:hover{border-color:var(--blue-2);color:var(--blue-2)}
+.hero-meta{margin-top:52px;display:flex;gap:40px;flex-wrap:wrap;padding-top:26px;border-top:1px solid var(--line);max-width:660px}
+.hero-meta .n{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:2.2rem;color:var(--cream);line-height:1}
+.hero-meta .l{font-size:.78rem;color:var(--cream-3);letter-spacing:.02em;margin-top:6px;display:block}
+
+/* ---------- SECTION SHELL ---------- */
+section{position:relative;z-index:2;padding:clamp(70px,10vw,128px) var(--gutter)}
+.sec-head{max-width:760px;margin-bottom:56px}
+.sec-head h2{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:clamp(2rem,4.4vw,3.4rem);margin-top:16px;letter-spacing:-.01em}
+.sec-head p{color:var(--cream-2);font-size:1.08rem;margin-top:18px;max-width:620px}
+
+/* ---------- PROOF ---------- */
+.proof{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.proof-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(30px,5vw,70px);align-items:center}
+.proof h2{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:clamp(2rem,4vw,3.2rem)}
+.proof .lead{color:var(--cream-2);margin:20px 0 26px;font-size:1.08rem}
+.proof .big{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:clamp(3.2rem,8vw,5.4rem);line-height:1;
+  background:var(--spectrum);-webkit-background-clip:text;background-clip:text;color:transparent;margin:4px 0}
+.proof .bigsub{color:var(--cream-3);font-size:.95rem}
+.slider-wrap{margin-top:32px}
+.slider-wrap label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--cream-2);margin-bottom:12px}
+.slider-wrap label b{color:var(--blue-2);font-family:"Cormorant Garamond",serif;font-size:1.15rem;font-weight:700}
+input[type=range]{-webkit-appearance:none;width:100%;height:2px;background:var(--line-2);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--blue-2);cursor:pointer;border:3px solid var(--bg-2);box-shadow:0 0 0 1px var(--blue-2)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--blue-2);cursor:pointer;border:3px solid var(--bg-2)}
+.chart-box{background:var(--bg-3);border:1px solid var(--line);border-radius:16px;padding:22px}
+.chart-box svg{width:100%;height:auto;display:block}
+.chart-axis{stroke:var(--line-2);stroke-width:1}
+.chart-line{fill:none;stroke:var(--blue-2);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(122,140,209,.5))}
+.chart-area{fill:url(#gg);opacity:.25}
+.chart-flat{fill:none;stroke:var(--line-2);stroke-width:1.5;stroke-dasharray:5 6}
+.chart-caption{display:flex;justify-content:space-between;font-size:.72rem;color:var(--cream-3);margin-top:10px}
+
+/* ---------- METHODE ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.step-card{background:var(--bg-2);padding:34px 28px;position:relative;transition:background .25s}
+.step-card:hover{background:var(--bg-3)}
+.step-card .num{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:1.9rem;color:var(--line-2);position:absolute;top:18px;right:24px;transition:color .25s}
+.step-card:hover .num{color:var(--blue-2)}
+.step-card .jp{font-family:"Shippori Mincho",serif;font-weight:700;font-size:2.4rem;color:var(--blue-2);display:block;margin-bottom:14px}
+.step-card h3{font-size:1.25rem;margin-bottom:10px}
+.step-card p{font-size:.92rem;color:var(--cream-2)}
+
+/* ---------- SERVICES ---------- */
+.services{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.svc{border:1px solid var(--line);border-radius:16px;padding:30px 28px;background:var(--bg-3);transition:.25s;position:relative;overflow:hidden}
+.svc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue-2);transform:scaleY(0);transform-origin:top;transition:transform .3s}
+.svc:hover{transform:translateY(-4px);border-color:var(--line-2);box-shadow:0 26px 54px -34px #000}
+.svc:hover::before{transform:scaleY(1)}
+.svc .jp{font-family:"Shippori Mincho",serif;color:var(--blue-2);font-size:1.4rem;font-weight:700}
+.svc h3{font-size:1.18rem;margin:14px 0 10px}
+.svc p{font-size:.9rem;color:var(--cream-2)}
+
+/* ---------- LOCAL ---------- */
+.local-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(30px,5vw,64px);align-items:center}
+.local h2{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:clamp(2rem,4vw,3.2rem)}
+.local p{color:var(--cream-2);font-size:1.08rem;margin-top:22px}
+.local ul{list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:14px}
+.local li{display:flex;gap:14px;align-items:flex-start;font-size:.98rem;color:var(--cream-2)}
+.local li .dot{color:var(--blue-2);font-family:"Shippori Mincho",serif;font-weight:700;flex:none}
+.radius-viz{position:relative;aspect-ratio:1;max-width:420px;margin:0 auto;width:100%}
+.radius-viz svg{width:100%;height:100%;overflow:visible}
+.ring{fill:none;stroke:var(--blue);opacity:.4}
+.ring.r1{animation:pulse 3.5s ease-in-out infinite}
+.ring.r2{animation:pulse 3.5s ease-in-out .5s infinite}
+.ring.r3{animation:pulse 3.5s ease-in-out 1s infinite}
+.pin{fill:var(--blue-2);filter:drop-shadow(0 0 10px rgba(122,140,209,.6))}
+@keyframes pulse{0%,100%{opacity:.14}50%{opacity:.5}}
+
+/* ---------- CONTACT ---------- */
+.contact{background:var(--bg-2);border-top:1px solid var(--line);text-align:center}
+.contact .sec-head{margin:0 auto 44px;text-align:center}
+.contact .sec-head p{margin-left:auto;margin-right:auto}
+.form{max-width:560px;margin:0 auto;text-align:left}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:.78rem;letter-spacing:.05em;color:var(--cream-3);font-weight:500}
+.field input{font-family:inherit;font-size:1rem;padding:13px 16px;border:1px solid var(--line-2);border-radius:10px;background:var(--bg-3);color:var(--cream);transition:.2s}
+.field input:focus{outline:none;border-color:var(--blue-2);box-shadow:0 0 0 3px rgba(76,95,153,.25)}
+.form .btn-primary{width:100%;justify-content:center;margin-top:8px}
+.form-note{font-size:.78rem;color:var(--cream-3);text-align:center;margin-top:16px}
+.form-ok{display:none;background:var(--bg-3);border:1px solid var(--blue);border-radius:14px;padding:30px;text-align:center}
+.form-ok .jp{font-family:"Shippori Mincho",serif;color:var(--blue-2);font-size:2rem;font-weight:700}
+.form-ok.show{display:block}
+
+/* ---------- FOOTER ---------- */
+footer{background:var(--bg);border-top:1px solid var(--line);padding:52px var(--gutter) 40px;position:relative;z-index:2}
+.foot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;flex-wrap:wrap;padding-bottom:32px;border-bottom:1px solid var(--line)}
+.foot-brand img{height:52px;width:auto;display:block}
+.foot-cols{display:flex;gap:60px;flex-wrap:wrap}
+.foot-cols .col b{color:var(--cream);font-size:.82rem;letter-spacing:.05em;display:block;margin-bottom:12px}
+.foot-cols .col a{display:block;font-size:.88rem;margin-bottom:8px;color:var(--cream-2);transition:color .2s}
+.foot-cols .col a:hover{color:var(--blue-2)}
+.foot-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:24px;font-size:.78rem;color:var(--cream-3)}
+.foot-bottom .k{font-family:"Shippori Mincho",serif;color:var(--cream-2)}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:900px){
+  nav.links{position:fixed;inset:0 0 0 auto;width:min(320px,80vw);background:var(--bg-2);flex-direction:column;justify-content:center;padding:40px;transform:translateX(100%);transition:transform .35s;box-shadow:-20px 0 60px -30px #000;border-left:1px solid var(--line)}
+  nav.links.open{transform:none}
+  .burger{display:flex;z-index:101}
+  .proof-grid,.local-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .svc-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .svc-grid,.steps{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .hero-meta{gap:24px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;animation-delay:0s!important}
+  #intro{display:none}
+  header.nav{opacity:1;transform:none}
+}
+</style>
+</head>
+<body class="locked">
+
+<!-- ===== OPENING ANIMATION ===== -->
+<div id="intro" aria-hidden="true">
+  <button class="skip" id="skipBtn">Passer l'intro</button>
+  <div class="intro-stage">
+    <svg class="intro-svg" viewBox="0 0 210 130" role="img" aria-label="Animation KCP">
+      <rect class="ibar ibar-1" x="6"   y="94"  width="20" height="30" rx="3" fill="#FAF9F6"/>
+      <rect class="ibar ibar-2" x="34"  y="78"  width="20" height="46" rx="3" fill="#FAF9F6"/>
+      <rect class="ibar ibar-3" x="62"  y="58"  width="20" height="66" rx="3" fill="#FAF9F6"/>
+      <rect class="ibar ibar-4" x="90"  y="34"  width="20" height="90" rx="3" fill="#FAF9F6"/>
+      <rect class="ibar ibar-5" x="118" y="10"  width="20" height="114" rx="3" fill="#4C5F99"/>
+      <path class="iline" d="M16 94 L44 78 L72 58 L100 34 L128 12"/>
+    </svg>
+    <div class="intro-word">KCP</div>
+    <div class="intro-tag"><span class="k">改善</span> Kaizen Corporation</div>
+  </div>
+</div>
+
+<!-- ===== NAV ===== -->
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="KCP accueil"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAToAAADYCAYAAAB7uS9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA04SURBVHhe7d1/TNR3nsfxVy9mp9mGkvaUtgYsG3XrCo22Je3OFkuq3GTrr55xlVC3uhBM8PSyNjSFLAkcJmwkYVZJNJLIQY1biXjdWta1uxy9Hifb2Xp1m0bWvapU48zROzQmxJh0EpPeH4AwH2ZgQOzNvOf5SOYP39+vAzTp08/3y/f7nQdCwS+/Wf7cSwIAq/7GHQCANYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeYQOgHmEDoB5hA6AeQ+Egl9+s/y5l9w5DHveV+WOpuVs1153BCQ0VnQAzCN0AMwjdADM4xxdCuIc3SxZVqCSH/uU90S65i1aqMcelDQUUl9wUNfOntKxYwEFx++fvU6VpYt0sXWf3rs6fgPuN0KXghIydGUH9MnuAmXMcTfE9vVfWuXbuC8yJpKkUrUEdmrVI99xN0zw9Vdd2vNyhdrdDbFke1W+o1zFP/Zq8aPuRsedW7p0plPN/jq1f14g/0cHVLzIo8GPqrV86wl3b+XXHtfh4qV60N0wlfB1Xbse1tDABZ0/+wd9cKpLvYQ0AoeuSAwPpenhdI88D8X/ejB9rp5030eSlKGMeWkT9o/2Sk9/WOnuX48qUxtqj+iT7iOqeW1i5MJDN3Tpi/6RV0hDYUlz0rT45S3ynzyvK5cPq3iRR5KUkevThsi/PuyReUqP8j1O+Xo0U4ufWqi8l9eppPKAOs5c1JWzJ9VSuUm57tdIUazoUlBCrug0vFpa/fIPVVxaqlXZw1GYIHxDn757VG3/2qP3ui+4W8fJVP7adSreXaYNT6W5GxUOBXRsf4Oqj0/2HiOy16m++Z9UkuO+T1iDZzvVtKdabZ87myRleUtVVV2m1cvmKvKnCen0aytVdiZiOGxZgTas8GnH9k3KjbFivHT8+yp4U8ry+pQ336MFy9Zr1d89q7xM9/uTdDuk3qN12lzf425JKYQuBSVs6EaVHdFfa71RV1rhPx/S917d544nUa+e4CYtvvvnsIKn9uonO96JcsgbRfYWtRyt0mo3vHduqHd/mTY3TR3K3JID+udqn7LGvUXw/W16YVdg/G6RGj/QQNFCdyqNC50r69Uq+au3KP+Jif9IDJ5tVcXGvfrQ3ZAiOHRFUvk6POSOJpX15iItuPunW+pr26UX4o2cCuRvixI53VJvw+a4Iidp+GuWn9Cl8NgsK2etssbvNAuC7+/V5s2/0HuXx32hERnPl6qlu16r3A0pgtAluIHgxXt6pbTCev26/Jnhw8Y7N9Tb+Lp8NfEfwpUf+9Xd82rjDQUOqqI55I4n112tnzYGdDfT2Tkqidxjdlz9rXaW7FNvlH8PPE9t0oFjpe44JRA62FRYr57mTVrsGT6v9+E0VmCSpKLDKl8R5ZxX+ILa32qNc0UYKdhcrbf/PLLamrNQeVEOP2fF1VZVnLigies6KX1FmY4WuVP7CB3sKaxV1/7RyIV0um6zXp/WCixT9SUFynDHkgY/fkd7ZnzpRkgNjZ26dEeSPHp6xRvuDrMmWNep/4yyqpPmKv/1eztHm4wIHWwprFXX/i3KTR+N3FaVHZ1O5CQV1WpNjjuUpBs6/7uJ179Ny5lq/WZkVefJXn5/Dl8lSa061x9tTSd5cn6oGndoHKGDHRGR69d7FTOInKTyjc9GXc1p6JL+eNwdTl9TxT6d/rxffR/3qNvdOIsaLsX42edkKbfMHdpG6GDDhMht1873Y/yPPqktWhnlujtJ0v+E1OzOZuJqq8rWviLfjpmd64vbregrOilNjy1xZ7YROiS/8ZGTFL7co70zipykFV49GeNC3aGb/e4osf330NhveVMcoUNycyInSZ6cLTr4Zub4veK3MjPm9W2D11rdUWJbkhH1outUROiQvKJEbphHea/Xq9wdxyHrkYfdUdLa8LcT/sOMuKX//Ys7s43QITkVVqnTHy1yIx71qrxtkzud0pr5sd4w2Xi1Zslcdzjs9mX9sc0d2kboZpF7V8J0X4hTYZU6/aXKi3EubVRG4Q61FLrTFFFWrhdjHL0PBv5FTe7QOEKH5PLdZ8cid/MzNTf2aNDd565MraqqV747nqEH58QoR6LJLlXHP0Z/KIJuBtRcd4/XAiYhQoekkr7MNxa5iiLtaapTc+CWu9tdnqfWq6Y2/kCF77iTMQ/P97mjxFNYpY6ON5QfbbUb7ld7xTY1z/jOjuRF6JB8bgbUsLVIe7olKaTmt36tT2+7O43yKLfYr8psdx5d20Ds9WH6o9Efm/RtW/DiEbXs2aENG9dptXep8teu04ZdtTp66mNdaSuN+pgmDV1QW8V2VdzPK5QTGKFDcrkZUMPWbWoa/6DLq/u0sz36TeySpIee0c9+GedTOy4Pxr727PHMGf0md7Z5Mr1aXfKGDu73q6XjpDoO+XWwcotWTXjAp6TbN9T3bp18uX+v6pleW2gAoUNSGfqiJzJyI4J1+3R6kkOyuJ/a0RyKfc4vfbFejOc97rPgqX1qOxVQ3xchDd0OK+y8hkL9+vSjE2qq3KYXlvxIvt3vqM99kxRD6GBEj3bWdU1yS9Vcrdp9II4HT55SrFtEpbl6es30L1mZbV/fPqTqHdvkK1ypHyx5Wt9zXj/wvqL1W6vV4H4KWQojdLCje5f2d99wp2MyC1TT4HWnjoDePhezdMr40RbVxHm+L7ZM1fz+vAaunEy5p4j8fyF0MKW9riXq03WHebR4Y+WUoept7FFfrN++epaqON7zfbEUVmlNjkcKh2OfV8SsInSw5WqrKt7+LHZAPEtV0vRGzPtZJUlX69T277FXhukrdqqjPP5LViIVyF9dMPz1v7qsY+5m3BcpGzr3roTpvpC4go379ZsvYqZOnmd/Kv8Uz2Nrr2tR7013OipN+W8e1sFXpxu7TJV3jH0ORd+ZQ5xD+5akbOhgWUAVe7sUjHX4qTTl/8NhFbvj8a62quLQuA+zcXkWaoO/Qx216yZfHd5VoJp3O1TjHXnW3fUetdXEPheI2UXoYFN3hX7x+0lCMq9Auw8VuNMIweZt2tX82SSxm6v8Mr/+I3Bc/l0FynW3a/hDucsbjqin77DKnx+5yT7cr/a3tqvd3TdOSXMrWgIhdEgs2V5V+nKj36cpKX3petUXLXXHUX34cX/sSEnKWvsrdU6xIvuwvkibGgMajLk6lDyZz6i48rC6ghd15b/OR7wGzhxRzWteLR79gcIhna6b4g6FZZvkz40ds6wXqlTujb0dExE6JIYiv3r6LmrgzBH9fPTwLpr0pSppPKmBK+fUWRv9UpH82uP66+WLGvhlQcxgDktTXplfn1w5p87K2OHoa9qm5dtb1RuKfd5vlOchT8RrvHAooObylTE/xyKrcuT7PlWv4pwJ9ziMyfSppuPfNBC8qCt9H+hgAlzEnOgIHRLD43OVMXmVIs1J04LM6HGa9/g8pU/SiQnmpOmx7GfcaaTuvdrsfUWb63+rvq+mDl6Em/063VShl7zbRu7Pje7JJ6b5fUvypGdo3iT/LmDYA6Hgl98sf+4ld27evf7mdH7W991R0rzn8757+1zPs1173VHqWVagn29cr7ycpVowP0MLHvnO2LbwdV27fl3Xzv1Jp0+eUHsg+goO3x5CN0PRApIs70nokGo4dAVgHqEDYF7KHroCSB2s6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmEfoAJhH6ACYR+gAmPd/P87Sc3V2DWQAAAAASUVORK5CYII=" alt="KCP — Kaizen Corporation"></a>
+  <nav class="links" id="links">
+    <a href="#methode">Méthode</a>
+    <a href="#services">Services</a>
+    <a href="#local">Local</a>
+    <a href="#preuve">La preuve</a>
+    <a href="#contact" class="nav-cta">Diagnostic gratuit</a>
+  </nav>
+  <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</header>
+
+<!-- ===== HERO ===== -->
+<main id="top">
+<section class="hero">
+  <div class="hero-bars-bg" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="hero-inner">
+    <span class="eyebrow"><span class="bars"><i></i><i></i><i></i><i></i></span> Kaizen Corporation · 改善</span>
+    <h1>La croissance de votre commerce,<br><span class="accent">une amélioration</span> <em>à la fois.</em></h1>
+    <p class="lead">KCP applique le Kaizen au marketing digital : des ajustements petits, mesurés et répétés qui composent la croissance des entreprises locales. Pas de coup d'éclat — du cumul.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-primary">Diagnostiquer mon commerce →</a>
+      <a href="#methode" class="btn btn-ghost">Voir la méthode</a>
+    </div>
+    <div class="hero-meta">
+      <div><span class="n">×1,7</span><span class="l">en un an, à 1 %/semaine</span></div>
+      <div><span class="n">5 km</span><span class="l">le périmètre qui compte</span></div>
+      <div><span class="n">4 étapes</span><span class="l">mesurer · améliorer · vérifier · répéter</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROOF ===== -->
+<section class="proof" id="preuve">
+  <div class="proof-grid">
+    <div>
+      <span class="eyebrow"><span class="k">複利</span> L'effet cumulé</span>
+      <h2>Le Kaizen n'est pas un slogan. C'est une multiplication.</h2>
+      <p class="lead">Améliorez un seul indicateur de 1 % chaque semaine — un mot dans votre fiche Google, une photo, une réponse à un avis. Répétez 52 fois. Les gains se composent.</p>
+      <div class="big" id="multOut">×1,7</div>
+      <div class="bigsub">résultat au bout d'un an, sans jamais forcer.</div>
+      <div class="slider-wrap">
+        <label>Amélioration chaque semaine <b id="rateOut">1,0 %</b></label>
+        <input type="range" id="rate" min="0.5" max="3" step="0.1" value="1">
+      </div>
+    </div>
+    <div class="chart-box">
+      <svg viewBox="0 0 400 240" id="chart" role="img" aria-label="Courbe de croissance cumulée">
+        <defs><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7A8CD1"/><stop offset="100%" stop-color="#7A8CD1" stop-opacity="0"/>
+        </linearGradient></defs>
+        <line class="chart-axis" x1="34" y1="210" x2="390" y2="210"/>
+        <line class="chart-axis" x1="34" y1="16" x2="34" y2="210"/>
+        <line class="chart-flat" x1="34" y1="196" x2="390" y2="196"/>
+        <path class="chart-area" id="area" d=""/>
+        <path class="chart-line" id="line" d=""/>
+      </svg>
+      <div class="chart-caption"><span>Semaine 1</span><span>Une intervention hebdomadaire</span><span>Semaine 52</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHODE ===== -->
+<section class="method" id="methode">
+  <div class="sec-head">
+    <span class="eyebrow"><span class="k">改善</span> La méthode</span>
+    <h2>Quatre gestes, en boucle, sans fin.</h2>
+    <p>Le Kaizen industriel repose sur un cycle : mesurer, agir petit, vérifier, recommencer. KCP l'applique à votre présence en ligne. Chaque tour isole une cause, prouve un effet, et n'avance que ce qui marche.</p>
+  </div>
+  <div class="steps">
+    <div class="step-card"><span class="num">01</span><span class="jp">測</span><h3>Mesurer</h3><p>On établit la ligne de base chiffrée : trafic, appels, itinéraires, avis. Rien ne s'améliore sans point de départ mesurable.</p></div>
+    <div class="step-card"><span class="num">02</span><span class="jp">改</span><h3>Améliorer</h3><p>Une seule intervention à la fois : fiche Google, page d'accueil, une campagne. Petit périmètre — donc effet isolable.</p></div>
+    <div class="step-card"><span class="num">03</span><span class="jp">検</span><h3>Vérifier</h3><p>On lit le résultat sur les vrais indicateurs, pas sur des impressions. Ce qui ne bouge pas les chiffres est abandonné.</p></div>
+    <div class="step-card"><span class="num">04</span><span class="jp">続</span><h3>Répéter</h3><p>On empile ce qui fonctionne, on jette le reste. La croissance vient du cumul discipliné, tour après tour.</p></div>
+  </div>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section class="services" id="services">
+  <div class="sec-head">
+    <span class="eyebrow"><span class="k">道具</span> Les leviers</span>
+    <h2>Chaque levier, un terrain d'amélioration.</h2>
+    <p>On n'active pas tout d'un coup. On priorise le levier au plus fort effet pour votre commerce, on le perfectionne, puis on passe au suivant.</p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc"><span class="jp">地</span><h3>SEO local & Google Business</h3><p>Fiche optimisée, mots-clés de proximité, cohérence des coordonnées. Être trouvé quand quelqu'un cherche « près de moi ».</p></div>
+    <div class="svc"><span class="jp">告</span><h3>Publicité ciblée</h3><p>Meta et Google Ads calibrés sur votre zone de chalandise. Budget maîtrisé, coût par contact suivi à l'euro près.</p></div>
+    <div class="svc"><span class="jp">声</span><h3>Réseaux & contenu</h3><p>Une présence régulière et crédible, tenue dans le temps plutôt que par à-coups. Le rythme prime sur le volume.</p></div>
+    <div class="svc"><span class="jp">転</span><h3>Site & conversion</h3><p>Un site rapide qui transforme le visiteur en client : appel, réservation, itinéraire. On optimise ce qui fait passer à l'action.</p></div>
+    <div class="svc"><span class="jp">信</span><h3>Réputation & avis</h3><p>Collecte structurée des avis, réponses soignées, gestion des retours négatifs. La confiance locale se construit ligne par ligne.</p></div>
+    <div class="svc"><span class="jp">数</span><h3>Data & reporting</h3><p>Un tableau de bord clair, chaque mois. Vous voyez ce qui a bougé, pourquoi, et ce qu'on améliore ensuite. Zéro jargon.</p></div>
+  </div>
+</section>
+
+<!-- ===== LOCAL ===== -->
+<section class="local" id="local">
+  <div class="local-grid">
+    <div>
+      <span class="eyebrow"><span class="k">近</span> Pensé pour le local</span>
+      <h2>Vous n'avez pas besoin de la France entière. Vous avez besoin de votre quartier.</h2>
+      <p>Le marketing des grandes marques ne descend pas à l'échelle d'un commerce de proximité. Un restaurant, un cabinet, un artisan ne cherchent pas la notoriété nationale — ils cherchent les gens à quelques kilomètres, prêts à pousser la porte.</p>
+      <ul>
+        <li><span class="dot">一</span> On concentre l'effort sur votre rayon réel, pas sur des vues fantômes.</li>
+        <li><span class="dot">二</span> On parle en clients, appels et visites — pas en « likes ».</li>
+        <li><span class="dot">三</span> On avance à votre budget : petit, régulier, sans engagement lourd.</li>
+      </ul>
+    </div>
+    <div class="radius-viz">
+      <svg viewBox="0 0 300 300" aria-hidden="true">
+        <circle class="ring r3" cx="150" cy="150" r="130" stroke-width="1.5"/>
+        <circle class="ring r2" cx="150" cy="150" r="90" stroke-width="1.5"/>
+        <circle class="ring r1" cx="150" cy="150" r="50" stroke-width="1.5"/>
+        <path class="pin" d="M150 118 c-14 0-25 11-25 25 0 18 25 44 25 44s25-26 25-44c0-14-11-25-25-25z"/>
+        <circle cx="150" cy="143" r="8" fill="#14161C"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section class="contact" id="contact">
+  <div class="sec-head">
+    <span class="eyebrow"><span class="k">始</span> Commencez par une mesure</span>
+    <h2>Un diagnostic gratuit de votre présence locale.</h2>
+    <p>On regarde votre fiche Google, votre visibilité et vos avis, puis on identifie la première amélioration à fort effet. Sans engagement.</p>
+  </div>
+  <form class="form" id="diagForm">
+    <div class="form-row">
+      <div class="field"><label for="f-nom">Votre nom</label><input id="f-nom" type="text" required></div>
+      <div class="field"><label for="f-com">Nom du commerce</label><input id="f-com" type="text" required></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label for="f-ville">Ville</label><input id="f-ville" type="text" required></div>
+      <div class="field"><label for="f-mail">Email</label><input id="f-mail" type="email" required></div>
+    </div>
+    <button type="submit" class="btn btn-primary">Demander mon diagnostic →</button>
+    <p class="form-note">Réponse sous 48 h. Aucune carte bancaire, aucun engagement.</p>
+  </form>
+  <div class="form-ok" id="formOk">
+    <div class="jp">改</div>
+    <h3>Bien reçu.</h3>
+    <p>On analyse votre présence locale et on revient vers vous sous 48 h avec la première amélioration à activer.</p>
+  </div>
+</section>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand"><img src="data:image/png;base64,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" alt="KCP — Kaizen Corporation"></div>
+    <div class="foot-cols">
+      <div class="col"><b>Naviguer</b><a href="#methode">Méthode</a><a href="#services">Services</a><a href="#preuve">La preuve</a></div>
+      <div class="col"><b>Contact</b><a href="#contact">Diagnostic gratuit</a><a href="mailto:kcp.agency.com@gmail.com">kcp.agency.com@gmail.com</a></div>
+      <div class="col"><b>Philosophie</b><a href="#top">改善 · Kaizen</a><a href="#local">Marketing local</a></div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 KCP — Kaizen Corporation. La croissance par l'amélioration continue.</span>
+    <span class="k">改善 · un pas, puis le suivant.</span>
+  </div>
+</footer>
+
+<script>
+const intro=document.getElementById('intro'),nav=document.getElementById('nav'),body=document.body;
+function dismissIntro(){if(intro.classList.contains('lift'))return;intro.classList.add('lift');body.classList.remove('locked');nav.classList.add('show');setTimeout(()=>intro.remove(),1100);}
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduce){if(intro)intro.remove();body.classList.remove('locked');nav.classList.add('show');}
+else{setTimeout(dismissIntro,3400);}
+document.getElementById('skipBtn').addEventListener('click',dismissIntro);
+
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>20));
+const burger=document.getElementById('burger'),links=document.getElementById('links');
+burger.addEventListener('click',()=>links.classList.toggle('open'));
+links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
+
+const rate=document.getElementById('rate'),rateOut=document.getElementById('rateOut'),multOut=document.getElementById('multOut'),line=document.getElementById('line'),area=document.getElementById('area');
+const W=400,H=240,padL=34,padR=10,padT=16,padB=30;
+const fmt=n=>n.toLocaleString('fr-FR',{minimumFractionDigits:1,maximumFractionDigits:1});
+function draw(){
+  const r=parseFloat(rate.value)/100,weeks=52,vals=[];
+  for(let w=0;w<=weeks;w++)vals.push(Math.pow(1+r,w));
+  const max=vals[weeks],x=w=>padL+(W-padL-padR)*(w/weeks),y=v=>H-padB-(H-padT-padB)*((v-1)/(max-1||1));
+  let d='M'+x(0)+' '+y(vals[0]);
+  for(let w=1;w<=weeks;w++)d+=' L'+x(w).toFixed(1)+' '+y(vals[w]).toFixed(1);
+  line.setAttribute('d',d);area.setAttribute('d',d+' L'+x(weeks)+' '+(H-padB)+' L'+x(0)+' '+(H-padB)+' Z');
+  rateOut.textContent=fmt(parseFloat(rate.value))+' %';multOut.textContent='×'+fmt(max);
+}
+rate.addEventListener('input',draw);draw();
+
+document.getElementById('diagForm').addEventListener('submit',e=>{e.preventDefault();e.target.style.display='none';document.getElementById('formOk').classList.add('show');});
+</script>
+</body>
+</html>
