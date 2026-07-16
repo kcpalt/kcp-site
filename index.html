@@ -412,13 +412,13 @@ footer{background:var(--bg);border-top:1px solid var(--line);padding:52px var(--
       <div class="field"><label for="f-ville">Ville</label><input id="f-ville" type="text" required></div>
       <div class="field"><label for="f-mail">Email</label><input id="f-mail" type="email" required></div>
     </div>
-    <button type="submit" class="btn btn-primary">Demander mon diagnostic →</button>
+    <button type="submit" class="btn btn-primary" id="diagBtn">Demander mon diagnostic →</button>
     <p class="form-note">Réponse sous 48 h. Aucune carte bancaire, aucun engagement.</p>
   </form>
   <div class="form-ok" id="formOk">
     <div class="jp">改</div>
     <h3>Bien reçu.</h3>
-    <p>On analyse votre présence locale et on revient vers vous sous 48 h avec la première amélioration à activer.</p>
+    <p>Votre demande a été envoyée. On analyse votre présence locale et on revient vers vous sous 48 h avec la première amélioration à activer.</p>
   </div>
 </section>
 </main>
@@ -466,7 +466,58 @@ function draw(){
 }
 rate.addEventListener('input',draw);draw();
 
-document.getElementById('diagForm').addEventListener('submit',e=>{e.preventDefault();e.target.style.display='none';document.getElementById('formOk').classList.add('show');});
+/* ============================================================
+   ENVOI DU FORMULAIRE — Formspree (recommandé) avec repli mailto.
+   1. Crée un compte sur https://formspree.io, crée un formulaire,
+      copie son URL (ex: https://formspree.io/f/xxxxabcd).
+   2. Colle cette URL ci-dessous, entre les guillemets.
+   Tant que c'est vide "", le site utilise automatiquement le
+   mailto: (moins fiable mais fonctionne sans compte externe).
+   ============================================================ */
+const FORMSPREE_ENDPOINT = ""; // ex: "https://formspree.io/f/xxxxabcd"
+const CONTACT_EMAIL = "kcp.agency.com@gmail.com";
+
+document.getElementById('diagForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const g=id=>document.getElementById(id).value.trim();
+  const nom=g('f-nom'),com=g('f-com'),ville=g('f-ville'),mail=g('f-mail');
+  const btn=document.getElementById('diagBtn');
+  const formEl=e.target;
+  const formOk=document.getElementById('formOk');
+
+  if(!FORMSPREE_ENDPOINT){
+    // --- Repli : mailto (aucun envoi serveur configuré) ---
+    const sujet=encodeURIComponent('Demande de diagnostic — '+(com||'commerce'));
+    const corps=encodeURIComponent(
+      'Nom : '+nom+'\n'+'Commerce : '+com+'\n'+'Ville : '+ville+'\n'+'Email : '+mail+'\n\n'+
+      'Bonjour KCP, je souhaite un diagnostic gratuit de ma présence locale.');
+    window.location.href='mailto:'+CONTACT_EMAIL+'?subject='+sujet+'&body='+corps;
+    formEl.style.display='none';
+    formOk.classList.add('show');
+    return;
+  }
+
+  // --- Envoi serveur réel via Formspree ---
+  const original=btn.textContent;
+  btn.disabled=true; btn.textContent='Envoi en cours…';
+  try{
+    const res=await fetch(FORMSPREE_ENDPOINT,{
+      method:'POST',
+      headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body:JSON.stringify({
+        nom, commerce:com, ville, email:mail,
+        _subject:'Demande de diagnostic — '+(com||'commerce'),
+        message:'Nom : '+nom+'\nCommerce : '+com+'\nVille : '+ville+'\nEmail : '+mail
+      })
+    });
+    if(!res.ok) throw new Error('status '+res.status);
+    formEl.style.display='none';
+    formOk.classList.add('show');
+  }catch(err){
+    btn.disabled=false; btn.textContent=original;
+    alert("L'envoi a échoué. Réessayez, ou écrivez-nous directement à "+CONTACT_EMAIL+".");
+  }
+});
 </script>
 </body>
 </html>
